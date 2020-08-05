@@ -1,4 +1,5 @@
 G = []
+result = []
 class Node:
     def __init__(self,dinh,chiphi,hue,truoc):
         self.dinh = dinh
@@ -60,18 +61,22 @@ def check(Open,Close,x):
         if Close[i].dinh == x:
             return False
     return True
-def printResult(P):
-    print('chi phi: %d'%P[len(P)-1].chiphi)
-    print('duong di:',end = " ")
-    for i in range(len(P)-1):
-        print(P[i].dinh, end = "=> ")
-    print(P[len(P)-1].dinh)
+def printResult(P,node,s,result):
+    if(node.dinh == s):
+        result.append(node.dinh)
+        for i in reversed(result):
+            print(i, end = " => " if i != result[0] else " ")
+        return
+    result.append(node.dinh)
+    for i in range(len(P)):
+        if(P[i].dinh == node.dinh):
+            return printResult(P,P[i].truoc,s,result)
 def AKT():
     P = []
     Hueristic = []
     Open = []
     Close = []
-    n,s,g = Init('data/graph2.inp','data/hueristic2.inp',G,Hueristic)
+    n,s,g = Init('data/graph3.inp','data/hueristic3.inp',G,Hueristic)
     Push(Open,Node(s,0,Hueristic[s],s))
     goal = Node(g,0,0,0)
     while True:
@@ -79,16 +84,16 @@ def AKT():
             if goal.chiphi == 0:
                 print('khong co duong di')
                 break
-            else: printResult(P)
+            else: printResult(P,goal,s,result)
         p = Open.pop()
         P.append(p)
         if p.dinh == goal.dinh:
-            printResult(P)
+            printResult(P,goal,s,result)
             break
         for i in range(len(G)):
             if(G[p.dinh][i] > 0):
                 if check(Open,Close,i):
-                    Push(Open,Node(i,G[p.dinh][i]+p.chiphi,Hueristic[i],p.dinh))
+                    Push(Open,Node(i,G[p.dinh][i]+p.chiphi,Hueristic[i],p))
         Close.append(p)
 AKT()
 
